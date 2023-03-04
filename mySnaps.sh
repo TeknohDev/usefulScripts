@@ -1,5 +1,10 @@
 #!/bin/bash
 
+sudo apt update
+sudo apt install -y zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+
 # List of snaps to install
 SNAPS=(
     dataspell
@@ -30,3 +35,5 @@ for snap in "${SNAPS[@]}"; do
         echo "$snap is already installed."
     fi
 done
+
+emulate sh -c 'source /etc/profile.d/apps-bin-path.sh'
