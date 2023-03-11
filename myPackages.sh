@@ -4,7 +4,8 @@
 PACKAGES=(
     subversion
     python3-pip
-    package3
+    vim
+    curl
 )
 
 # Update the package index and upgrade any existing packages
