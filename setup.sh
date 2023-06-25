@@ -25,9 +25,12 @@ for package in "${PACKAGES[@]}"; do
     if dpkg -s "$package" >/dev/null 2>&1; then
         echo "$package is already installed."
     else
-        sudo apt install -y "$package"
+        sudo apt install -y "$package" &
     fi
 done
+
+# Wait for all installations to finish
+wait
 
 # Add Docker GPG key and repository
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
@@ -70,11 +73,14 @@ SNAPS=(
 # Iterate over the list of snaps and install them
 for snap in "${SNAPS[@]}"; do
     if ! snap list | grep -q "^$snap "; then
-        sudo snap install "$snap" --classic
+        sudo snap install "$snap" --classic &
     else
         echo "$snap is already installed."
     fi
 done
+
+# Wait for all snap installations to finish
+wait
 
 # Source the apps-bin-path.sh script to update the path
 source /etc/profile.d/apps-bin-path.sh
