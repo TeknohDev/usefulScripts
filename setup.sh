@@ -1,4 +1,12 @@
 #!/bin/bash
+set -e  # stop script execution on any error
+
+# Request root access upfront
+sudo -v
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+# Update the package index and upgrade any existing packages
+sudo apt update && sudo apt upgrade -y
 
 # List of packages to install
 PACKAGES=(
@@ -12,9 +20,6 @@ PACKAGES=(
     software-properties-common
 )
 
-# Update the package index and upgrade any existing packages
-sudo apt update && sudo apt upgrade -y
-
 # Install each package in the list
 for package in "${PACKAGES[@]}"; do
     if dpkg -s "$package" >/dev/null 2>&1; then
@@ -23,9 +28,6 @@ for package in "${PACKAGES[@]}"; do
         sudo apt install -y "$package"
     fi
 done
-
-# Install Oh My Zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # Add Docker GPG key and repository
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
@@ -55,7 +57,6 @@ SNAPS=(
     pycharm-professional
     android-studio
     spotify
-    docker
     discord
     postman
     remmina
@@ -76,4 +77,7 @@ for snap in "${SNAPS[@]}"; do
 done
 
 # Source the apps-bin-path.sh script to update the path
-emulate sh -c 'source /etc/profile.d/apps-bin-path.sh'
+source /etc/profile.d/apps-bin-path.sh
+
+# Install Oh My Zsh at the end of the script
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || echo "Oh My Zsh installation failed."
