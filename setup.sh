@@ -1,4 +1,3 @@
- installation failed." 
 #!/bin/bash
 
 PACKAGES=(
@@ -66,3 +65,4 @@ for snap in "${SNAPS[@]}"; do
 done
 
 emulate sh -c 'source /etc/profile.d/apps-bin-path.sh'
+
