@@ -87,4 +87,8 @@ source /etc/profile.d/apps-bin-path.sh
 
 # Install Oh My Zsh at the end of the script
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || echo "Oh My Zsh installation failed."
+
+
+# Install Oh My Zsh at the end of the script
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || echo "Oh My Zsh installation failed."
  
