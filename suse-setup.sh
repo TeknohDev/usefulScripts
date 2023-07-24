@@ -6,68 +6,77 @@ PACKAGES=(
     python3-pip
     vim
     curl
-    zsh
+    apt-transport-https
     ca-certificates
-    docker
-    docker-compose
+    software-properties-common
 )
 
 # Update the package index and upgrade any existing packages
-sudo zypper ref && sudo zypper up -y
+sudo apt update && sudo apt upgrade -y
 
 # Install each package in the list
 for package in "${PACKAGES[@]}"; do
-    if zypper se -i "$package" >/dev/null 2>&1; then
+    if dpkg -s "$package" >/dev/null 2>&1; then
         echo "$package is already installed."
     else
-        sudo zypper in -y "$package"
+        sudo apt install -y "$package"
     fi
 done
 
-# Install Oh My Zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+# Add Docker GPG key and repository
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-# Add Docker repository
-sudo zypper ar https://download.opensuse.org/repositories/Virtualization:containers/openSUSE_Leap_15.2/Virtualization:containers.repo
-
-# Install Docker packages
-sudo zypper in -y docker docker-compose
-
-# Enable Docker service
-sudo systemctl enable docker
+# Update and install Docker packages
+sudo apt update && sudo apt install -y docker-ce docker-ce-cli containerd.io
 
 # Add current user to the docker group
 sudo usermod -aG docker $USER
 
+# Install Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.17.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
 # Check Docker version
 docker --version
 
-# List of snaps to install (OpenSUSE uses Flatpaks instead of Snaps, but not all apps are available as Flatpaks.)
-FLATPAKS=(
-    com.jetbrains.DataSpell
-    com.jetbrains.WebStorm
-    com.visualstudio.code
-    com.jetbrains.DataGrip
-    com.jetbrains.CLion
-    com.jetbrains.IntelliJ-IDEA-Ultimate
-    com.jetbrains.PyCharm-Professional
-    com.google.AndroidStudio
-    com.spotify.Client
-    com.discordapp.Discord
-    com.getpostman.Postman
-    org.remmina.Remmina
-    io.github.bitwarden.desktop
-    org.gnome.Epiphany # (no Google Cloud SDK Flatpak available)
+# List of snaps to install
+SNAPS=(
+    dataspell
+    webstorm
+    code
+    datagrip
+    clion
+    intellij-idea-ultimate
+    pycharm-professional
+    android-studio
+    spotify
+    docker
+    discord
+    postman
+    remmina
+    nmap
+    bitwarden
+    kata-containers
+    google-cloud-sdk
+    john-the-ripper
 )
 
-# Add flathub repository
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
-# Iterate over the list of flatpaks and install them
-for flatpak in "${FLATPAKS[@]}"; do
-    if ! flatpak list | grep -q "$flatpak"; then
-        flatpak install flathub "$flatpak" -y
+# Iterate over the list of snaps and install them
+for snap in "${SNAPS[@]}"; do
+    if ! snap list | grep -q "^$snap "; then
+        sudo snap install "$snap" --classic
     else
-        echo "$flatpak is already installed."
+        echo "$snap is already installed."
     fi
 done
+
+# Install zsh at the end
+if ! dpkg -s "zsh" >/dev/null 2>&1; then
+    sudo apt install -y zsh
+else
+    echo "zsh is already installed."
+fi
+
+# Install Oh My Zsh at the end
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
