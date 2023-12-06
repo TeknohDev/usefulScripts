@@ -97,6 +97,9 @@ chsh -s $(which zsh)
 sudo ln -s /var/lib/snapd/desktop/applications/*.desktop /usr/share/applications/
 sudo gtk-update-icon-cache -f /usr/share/icons/hicolor
 
+git config --global user.name "teknoh"
+git config --global user.email "tyrindev@gmail.com"
+
 # Remind the user to reboot
 echo "Script completed. Please reboot your system for changes to take effect."
 
