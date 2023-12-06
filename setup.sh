@@ -90,5 +90,14 @@ else
     echo "Oh My Zsh is already installed."
 fi
 
+snap list --all
+
+chsh -s $(which zsh)
+
+sudo ln -s /var/lib/snapd/desktop/applications/*.desktop /usr/share/applications/
+sudo gtk-update-icon-cache -f /usr/share/icons/hicolor
+
 # Remind the user to reboot
 echo "Script completed. Please reboot your system for changes to take effect."
+
+sudo reboot
